@@ -1,25 +1,32 @@
-#ifndef LOGGER_FACTORY_H
-#define LOGGER_FACTORY_H
-#include "logger.h"
+#include "logger_factory.h"
+#include "concrete_loggers.h"
 #include <memory>
-#include <QTextEdit>
 
-// Типы логгеров, которые мы умеем создавать
-enum class LoggerType {
-    File,
-    Console,
-    Gui,
-    Network,
-    Composite
-};
+std::shared_ptr<Logger> LoggerFactory::createLogger(LoggerType type, const QString& param, QTextEdit* textEdit)
+{
+    switch (type) {
+    case LoggerType::File:
+        return std::make_shared<FileLogger>(param);
+    case LoggerType::Console:
+        return std::make_shared<ConsoleLogger>();
+    case LoggerType::Gui:
+        return std::make_shared<GuiLogger>(textEdit);
+    case LoggerType::Network:
+        return std::make_shared<NetworkLogger>();
+    case LoggerType::Composite:
+        return std::make_shared<CompositeLogger>();
+    default:
+        return nullptr;
+    }
+}
 
-class LoggerFactory {
-public:
-    // Статический метод-фабрика. Возвращает умный указатель (shared_ptr)
-    static std::shared_ptr<Logger> createLogger(LoggerType type,const QString& param = "",QTextEdit* textEdit = nullptr);
-    // Создает композитный логгер с предустановленными логгерами
-    static std::shared_ptr<CompositeLogger> createCompositeLogger(
-        const std::vector<std::shared_ptr<Logger>>& loggers = {});
-};
+std::shared_ptr<CompositeLogger> LoggerFactory::createCompositeLogger(const std::vector<std::shared_ptr<Logger>>& loggers)
+{
+    auto composite = std::make_shared<CompositeLogger>();
+    for (const auto& logger : loggers) {
+        composite->addLogger(logger);
+    }
+    return composite;
+}
+// LOGGER_FACTORY_H
 
-#endif // LOGGER_FACTORY_H
