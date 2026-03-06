@@ -10,3 +10,7 @@
 
 ## Схема взаимодействия классов
 ![Схема взаимодействия классов](imageclass.jpg)
+## Пояснение 
+- -uo-|> = наследование **(LoggerFactory --> Logger)**
+- o-- = содержит **(CompositeLogger o-- Logger)**
+- --> = зависимость **(ConsoleLogger -up-|> Logger)**
