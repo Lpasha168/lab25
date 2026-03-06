@@ -1,5 +1,6 @@
 #include "concrete_loggers.h"
 #include <QTextStream>
+#include <QDateTime>
 
 // -------- FileLogger --------
 FileLogger::FileLogger(const QString& filePath)
@@ -86,3 +87,44 @@ void NetworkLogger::log(const QString& message, LogLevel level)
 QString NetworkLogger::getName() const { return "Network Logger"; }
 bool NetworkLogger::isEnabled() const { return m_enabled; }
 void NetworkLogger::setEnabled(bool enabled) { m_enabled = enabled; }
+
+// -------- CompositeLogger --------
+void CompositeLogger::addLogger(std::shared_ptr<Logger> logger)
+{
+    if (logger) {
+        m_loggers.push_back(logger);
+    }
+}
+
+void CompositeLogger::removeLogger(const QString& loggerName)
+{
+    m_loggers.erase(
+        std::remove_if(m_loggers.begin(), m_loggers.end(),
+                       [&loggerName](const std::shared_ptr<Logger>& logger) {
+                           return logger && logger->getName() == loggerName;
+                       }),
+        m_loggers.end()
+        );
+}
+
+void CompositeLogger::log(const QString& message, LogLevel level)
+{
+    if (!m_enabled) return;
+
+    for (const auto& logger : m_loggers) {
+        if (logger && logger->isEnabled()) {
+            logger->log(message, level);
+        }
+    }
+}
+
+QString CompositeLogger::getName() const
+{
+    return "Composite Logger (" + QString::number(m_loggers.size()) + " loggers)";
+}
+
+bool CompositeLogger::isEnabled() const { return m_enabled; }
+void CompositeLogger::setEnabled(bool enabled) { m_enabled = enabled; }
+
+size_t CompositeLogger::getLoggerCount() const { return m_loggers.size(); }
+
