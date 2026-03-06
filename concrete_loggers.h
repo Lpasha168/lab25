@@ -7,7 +7,8 @@
 #include <QDebug>
 #include <QDateTime>
 
-// Преобразование уровня в текст
+
+
 inline QString levelToString(LogLevel level)
 {
     switch (level) {
@@ -18,10 +19,10 @@ inline QString levelToString(LogLevel level)
     return "[UNKNOWN]";
 }
 
-// ---------- FileLogger ----------
 class FileLogger : public Logger {
 public:
     explicit FileLogger(const QString& filePath);
+    ~FileLogger() override = default;
 
     void log(const QString& message, LogLevel level) override;
     QString getName() const override;
@@ -33,9 +34,9 @@ private:
     bool m_enabled = true;
 };
 
-// ---------- ConsoleLogger ----------
 class ConsoleLogger : public Logger {
 public:
+    ~ConsoleLogger() override = default;
     void log(const QString& message, LogLevel level) override;
     QString getName() const override;
     bool isEnabled() const override;
@@ -45,10 +46,11 @@ private:
     bool m_enabled = true;
 };
 
-// ---------- GuiLogger ----------
+
 class GuiLogger : public Logger {
 public:
     explicit GuiLogger(QTextEdit* textEdit);
+    ~GuiLogger() override = default;
 
     void log(const QString& message, LogLevel level) override;
     QString getName() const override;
@@ -60,9 +62,10 @@ private:
     bool m_enabled = true;
 };
 
-// ---------- NetworkLogger ----------
 class NetworkLogger : public Logger {
 public:
+    ~NetworkLogger() override = default;
+
     void log(const QString& message, LogLevel level) override;
     QString getName() const override;
     bool isEnabled() const override;
@@ -72,4 +75,5 @@ private:
     bool m_enabled = true;
 };
 
-#endif
+
+
