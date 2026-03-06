@@ -74,6 +74,7 @@ public:
 private:
     bool m_enabled = true;
 };
+#endif
 
 
 
