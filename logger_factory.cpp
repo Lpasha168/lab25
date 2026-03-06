@@ -1,18 +1,25 @@
-#include "logger_factory.h"
-#include "concrete_loggers.h"
+#ifndef LOGGER_FACTORY_H
+#define LOGGER_FACTORY_H
+#include "logger.h"
+#include <memory>
+#include <QTextEdit>
 
-std::unique_ptr<Logger> LoggerFactory::createLogger(LoggerType type, const QString& param, QTextEdit* textEdit) {
-    switch (type) {
-    case LoggerType::File:
-        // std::make_unique - правильный и безопасный способ создания умного указателя
-        return std::make_unique<FileLogger>(param);
-    case LoggerType::Console:
-        return std::make_unique<ConsoleLogger>();
-    case LoggerType::Gui:
-        return std::make_unique<GuiLogger>(textEdit);
-    case LoggerType::Network:
-        return std::make_unique<NetworkLogger>();
-    default:
-        return nullptr;
-    }
-}
+// Типы логгеров, которые мы умеем создавать
+enum class LoggerType {
+    File,
+    Console,
+    Gui,
+    Network,
+    Composite
+};
+
+class LoggerFactory {
+public:
+    // Статический метод-фабрика. Возвращает умный указатель (shared_ptr)
+    static std::shared_ptr<Logger> createLogger(LoggerType type,const QString& param = "",QTextEdit* textEdit = nullptr);
+    // Создает композитный логгер с предустановленными логгерами
+    static std::shared_ptr<CompositeLogger> createCompositeLogger(
+        const std::vector<std::shared_ptr<Logger>>& loggers = {});
+};
+
+#endif // LOGGER_FACTORY_H
